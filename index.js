@@ -1,4 +1,4 @@
-const canvas = document.getElementById("ropeCanvas");
+const canvas = document.getElementById("simulation-canvas");
 const context = canvas.getContext("2d");
 
 let dt; //delta time

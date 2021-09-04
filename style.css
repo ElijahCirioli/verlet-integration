@@ -1,5 +1,39 @@
-#ropeCanvas {
+#simulation-wrap {
+	display: flex;
+	flex-direction: column;
+	width: 500px;
+	margin: 50px auto;
+}
+#simulation-canvas {
 	background: rgb(249, 246, 234);
 	background: radial-gradient(circle, rgba(249, 246, 234, 1) 0%, rgba(219, 214, 180, 1) 100%);
 	cursor: url("cursor.png") 6 6, auto;
+}
+#button-controls {
+	display: flex;
+	flex-direction: row;
+	margin-top: 15px;
+}
+#tool-button-wrap {
+	display: flex;
+	flex-direction: row;
+	width: 110px;
+	justify-content: space-between;
+}
+.tool-button {
+	height: 30px;
+	width: 30px;
+	line-height: 30px;
+	border: none;
+	cursor: pointer;
+	box-shadow: 3px 3px 4px rgb(0 0 0 / 50%);
+	transition: 0.1s;
+	border-radius: 5px;
+	background-color: #c7cfd1;
+	color: #556266;
+	text-align: center;
+}
+.tool-button:hover {
+	transform: scale(1.05);
+	background-color: #d3dcde;
 }
