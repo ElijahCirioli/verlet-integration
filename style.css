@@ -12,12 +12,13 @@
 #button-controls {
 	display: flex;
 	flex-direction: row;
-	margin-top: 15px;
+	margin-top: 12px;
+	justify-content: space-between;
 }
 #tool-button-wrap {
 	display: flex;
 	flex-direction: row;
-	width: 110px;
+	width: 105px;
 	justify-content: space-between;
 }
 .tool-button {
@@ -29,11 +30,48 @@
 	box-shadow: 3px 3px 4px rgb(0 0 0 / 50%);
 	transition: 0.1s;
 	border-radius: 5px;
-	background-color: #c7cfd1;
+	background-color: #a2b1b8;
 	color: #556266;
 	text-align: center;
 }
 .tool-button:hover {
 	transform: scale(1.05);
-	background-color: #d3dcde;
+	background-color: #b6c5cc;
+}
+.tool-button:active {
+	transform: scale(0.97);
+}
+.active-button {
+	background-color: #c7d1d4;
+	color: #e6372e;
+}
+.active-button:hover {
+	background-color: #d1dde0;
+}
+.text-button {
+	height: 30px;
+	line-height: 32px;
+	margin: 0 5px;
+	padding: 0 15px;
+	border: none;
+	cursor: pointer;
+	box-shadow: 3px 3px 4px rgb(0 0 0 / 50%);
+	transition: 0.1s;
+	border-radius: 5px;
+	background-color: #c7d1d4;
+	color: #556266;
+	text-align: center;
+	font-family: "Comfortaa", sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+}
+.text-button:hover {
+	transform: scale(1.05);
+	background-color: #d1dde0;
+}
+.text-button:active {
+	transform: scale(0.97);
+}
+#run-button {
+	width: 175px;
 }

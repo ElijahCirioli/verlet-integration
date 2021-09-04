@@ -7,16 +7,20 @@
 		<title>Rope Simulation</title>
 		<link href="style.css" rel="stylesheet" type="text/css" media="all" />
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" crossorigin="anonymous" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet" />
 	</head>
 	<body>
 		<div id="simulation-wrap">
 			<canvas id="simulation-canvas" width="500" height="400"></canvas>
 			<div id="button-controls">
 				<div id="tool-button-wrap">
-					<button class="tool-button" id="dot-button"><i class="fas fa-circle"></i></button>
+					<button class="tool-button active-button" id="dot-button"><i class="fas fa-circle"></i></button>
 					<button class="tool-button" id="line-button"><i class="fas fa-slash"></i></button>
 					<button class="tool-button" id="cut-button"><i class="fas fa-cut"></i></button>
 				</div>
+				<button class="text-button" id="clear-button">CLEAR</button>
+				<button class="text-button" id="run-button">RUN SIMULATION</button>
 			</div>
 			<script src="index.js"></script>
 		</div>
