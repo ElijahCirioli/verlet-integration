@@ -232,6 +232,10 @@ function startLine(pos) {
 function endLine(pos) {
 	for (const p of points) {
 		if (p.intersect(pos)) {
+			//make sure we're not connecting to ourself
+			if (p === lineStartPoint) {
+				continue;
+			}
 			tool = "startLine";
 			//make sure the start point still exists
 			if (!lineStartPoint) {
