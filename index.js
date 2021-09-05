@@ -10,7 +10,7 @@ let running; //are the physics active?
 let points, lines; //all of the points and lines
 let tool; //the tool they are using
 let lineStartPoint, mousePos; //data to draw preview line
-let preset;
+let preset; //which preset are they viewing?
 let clicked; //is the mouse held down?
 
 class Vec {
@@ -66,6 +66,7 @@ class Point {
 	}
 
 	intersect(v) {
+		//does a point with the same radius as this one at position v overlap with this point?
 		const squaredDistance = Math.pow(v.x - this.pos.x, 2) + Math.pow(v.y - this.pos.y, 2);
 		const squaredDiameter = Math.pow(2 * this.radius, 2);
 		return squaredDistance <= squaredDiameter;
@@ -135,6 +136,7 @@ function draw() {
 }
 
 function physics() {
+	//update all the points
 	for (const p of points) {
 		if (!p.locked) {
 			const previousPosition = p.pos.clone();
@@ -147,9 +149,10 @@ function physics() {
 		}
 	}
 
+	//update all the lines many times until things are mostly worked out
 	for (let i = 0; i < numIterations; i++) {
 		//loop through array in semi-random order
-		let clonedLines = lines.slice(0);
+		const clonedLines = [...lines]; //shallow copy lines array
 		while (clonedLines.length > 0) {
 			const index = Math.floor(Math.random() * clonedLines.length);
 			const l = clonedLines[index];
@@ -169,12 +172,28 @@ function physics() {
 			}
 		}
 	}
+
+	//remove things when they get too far down
+	for (let i = 0; i < points.length; i++) {
+		if (points[i].pos.y > 1500) {
+			if (points[i] === lineStartPoint) {
+				lineStartPoint = undefined;
+				if (tool === "endLine") {
+					tool = "startLine";
+				}
+			}
+			removeLinesContainingPoint(points[i]);
+			points.splice(i, 1);
+			i--;
+		}
+	}
 }
 
 function tick() {
 	//calculate delta time
 	dt = Date.now() - lastTimestamp;
 	lastTimestamp = Date.now();
+	if (dt > 500) dt = 17; //try to prevent large jerk when bringing focus back to browser
 
 	//update physics and display to user
 	if (running) physics();
@@ -214,6 +233,10 @@ function endLine(pos) {
 	for (const p of points) {
 		if (p.intersect(pos)) {
 			tool = "startLine";
+			//make sure the start point still exists
+			if (!lineStartPoint) {
+				return;
+			}
 			//check for existing lines between these points
 			for (const l of lines) {
 				if (l.pointA === lineStartPoint && l.pointB === p) {
@@ -223,6 +246,7 @@ function endLine(pos) {
 				}
 			}
 			lines.push(new Line(lineStartPoint, p));
+			return;
 		}
 	}
 }
@@ -333,7 +357,7 @@ function preset1() {
 function preset2() {
 	//grid
 	const numPointsX = 21;
-	const numPointsY = 17;
+	const numPointsY = 16;
 
 	//points
 	const pointsArr = [];
@@ -349,7 +373,7 @@ function preset2() {
 		pointsArr.push(row);
 	}
 
-	//grid
+	//grid lines
 	for (let y = 0; y < numPointsY; y++) {
 		for (let x = 0; x < numPointsX; x++) {
 			if (x > 0) {
@@ -476,6 +500,9 @@ $("#cut-button").click((e) => {
 $("#clear-button").click((e) => {
 	lines = [];
 	points = [];
+	if (running) {
+		$("#run-button").click();
+	}
 });
 
 $("#preset-button").click((e) => {
