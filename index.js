@@ -10,6 +10,7 @@ let running; //are the physics active?
 let points, lines; //all of the points and lines
 let tool; //the tool they are using
 let lineStartPoint, mousePos; //data to draw preview line
+let preset;
 
 class Vec {
 	constructor(x, y) {
@@ -94,6 +95,7 @@ function setup() {
 	points = [];
 	lines = [];
 	lastTimestamp = Date.now();
+	preset = 0;
 	preset1();
 	requestAnimationFrame(tick);
 }
@@ -121,6 +123,13 @@ function draw() {
 		context.lineTo(mousePos.x, mousePos.y);
 		context.stroke();
 	}
+
+	//draw framerate
+	const fps = Math.round(1000 / dt);
+	context.fillStyle = "rgba(60, 60, 60, 0.7)";
+	context.font = "11px Arial";
+	context.textAlign = "left";
+	context.fillText(fps + " fps", 12, 18);
 }
 
 function physics() {
@@ -279,6 +288,86 @@ function preset1() {
 	points[points.length - 1].locked = true;
 }
 
+function preset2() {
+	//grid
+	const numPointsX = 21;
+	const numPointsY = 17;
+
+	//points
+	const pointsArr = [];
+	for (let y = 0; y < numPointsY; y++) {
+		const row = [];
+		for (let x = 0; x < numPointsX; x++) {
+			locked = y === 0 && x % 4 === 0;
+			pos = new Vec(x * 18 + 70, y * 18 + 50);
+			point = new Point(pos, locked);
+			points.push(point);
+			row.push(point);
+		}
+		pointsArr.push(row);
+	}
+
+	//grid
+	for (let y = 0; y < numPointsY; y++) {
+		for (let x = 0; x < numPointsX; x++) {
+			if (x > 0) {
+				lines.push(new Line(pointsArr[y][x], pointsArr[y][x - 1]));
+			}
+			if (y > 0) {
+				lines.push(new Line(pointsArr[y][x], pointsArr[y - 1][x]));
+			}
+		}
+	}
+}
+
+function preset3() {
+	//diagonal line
+	numPoints = 20;
+	for (let t = 0; t < numPoints; t++) {
+		const x = t * 15 + 60;
+		const y = 100 - t * 3;
+		const pos = new Vec(x, y);
+		point = new Point(pos, false);
+		if (t > 0) {
+			prevPoint = points[points.length - 1];
+			lines.push(new Line(point, prevPoint));
+		}
+		points.push(point);
+	}
+	points[0].locked = true;
+	points[points.length - 1].locked = true;
+
+	//parabola
+	numPoints = 30;
+	for (let t = 0; t < numPoints; t++) {
+		const x = t * 10 + 185;
+		const y = 235 - 10 * Math.pow(0.2 * (t - 19), 2);
+		const pos = new Vec(x, y);
+		point = new Point(pos, false);
+		if (t > 0) {
+			prevPoint = points[points.length - 1];
+			lines.push(new Line(point, prevPoint));
+		} else {
+			prevPoint = points[8];
+			lines.push(new Line(point, prevPoint));
+		}
+		points.push(point);
+	}
+
+	//diagonal line
+	numPoints = 13;
+	for (let t = 0; t < numPoints; t++) {
+		const x = 468 - t * 9;
+		const y = 184 - t * 11;
+		const pos = new Vec(x, y);
+		point = new Point(pos, false);
+		prevPoint = points[points.length - 1];
+		lines.push(new Line(point, prevPoint));
+		points.push(point);
+	}
+	lines.push(new Line(points[points.length - 1], points[19]));
+}
+
 canvas.onclick = (e) => {
 	e = e || window.event;
 	const rect = e.target.getBoundingClientRect();
@@ -331,6 +420,27 @@ $("#cut-button").click((e) => {
 $("#clear-button").click((e) => {
 	lines = [];
 	points = [];
+});
+
+$("#preset-button").click((e) => {
+	if (running) {
+		$("#run-button").click();
+	}
+	lines = [];
+	points = [];
+	preset = (preset + 1) % 4;
+	$("#preset-button").text("PRESET " + (preset + 1));
+	switch (preset) {
+		case 0:
+			preset1();
+			break;
+		case 1:
+			preset2();
+			break;
+		case 2:
+			preset3();
+			break;
+	}
 });
 
 $("#run-button").click((e) => {
