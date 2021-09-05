@@ -11,6 +11,7 @@ let points, lines; //all of the points and lines
 let tool; //the tool they are using
 let lineStartPoint, mousePos; //data to draw preview line
 let preset;
+let clicked; //is the mouse held down?
 
 class Vec {
 	constructor(x, y) {
@@ -92,6 +93,7 @@ class Line {
 function setup() {
 	tool = "dot";
 	running = false;
+	clicked = false;
 	points = [];
 	lines = [];
 	lastTimestamp = Date.now();
@@ -231,6 +233,46 @@ function removeLinesContainingPoint(p) {
 		if (l.pointA === p || l.pointB === p) {
 			lines.splice(i, 1);
 			i--;
+		}
+	}
+}
+
+function cutLines(pos) {
+	if (points.length === 0) {
+		return;
+	}
+	for (let i = 0; i < lines.length; i++) {
+		const l = lines[i];
+
+		const m = (l.pointB.pos.y - l.pointA.pos.y) / (l.pointB.pos.x - l.pointA.pos.x); //slope
+		const n = l.pointA.pos.y - m * l.pointA.pos.x; //intercept
+		const r = points[0].radius; //radius
+
+		//get quadratic coefficients
+		const a = 1 + Math.pow(m, 2);
+		const b = -pos.x * 2 + m * (n - pos.y) * 2;
+		const c = Math.pow(pos.x, 2) + Math.pow(n - pos.y, 2) - Math.pow(r, 2);
+
+		// get discriminant
+		const d = Math.pow(b, 2) - 4 * a * c;
+		if (d >= 0) {
+			//plug into quadratic formula to find intersections
+			const intersections = [(-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a), (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a)];
+			for (const xIntersection of intersections) {
+				if (l.pointA.pos.x > l.pointB.pos.x) {
+					if (xIntersection >= l.pointB.pos.x && xIntersection <= l.pointA.pos.x) {
+						lines.splice(i, 1);
+						i--;
+						break;
+					}
+				} else {
+					if (xIntersection >= l.pointA.pos.x && xIntersection <= l.pointB.pos.x) {
+						lines.splice(i, 1);
+						i--;
+						break;
+					}
+				}
+			}
 		}
 	}
 }
@@ -379,13 +421,26 @@ canvas.onclick = (e) => {
 		startLine(pos);
 	} else if (tool === "endLine") {
 		endLine(pos);
+	} else if (tool === "cut") {
+		cutLines(pos);
 	}
+};
+
+canvas.onmousedown = (e) => {
+	clicked = true;
+};
+
+canvas.onmouseup = (e) => {
+	clicked = false;
 };
 
 canvas.onmousemove = (e) => {
 	e = e || window.event;
 	const rect = e.target.getBoundingClientRect();
 	mousePos = new Vec(e.clientX - rect.left, e.clientY - rect.top);
+	if (tool === "cut" && clicked) {
+		cutLines(mousePos);
+	}
 };
 
 canvas.onmouseenter = (e) => {
@@ -397,6 +452,7 @@ canvas.onmouseenter = (e) => {
 canvas.onmouseleave = (e) => {
 	e = e || window.event;
 	mousePos.x = -1;
+	clicked = false;
 };
 
 $("#dot-button").click((e) => {
