@@ -1,15 +1,14 @@
 const canvas = document.getElementById("simulation-canvas");
 const context = canvas.getContext("2d");
 
-const gravitationalConstant = 0.0007;
+const gravitationalConstant = 0.0008;
 const numIterations = 500;
 
 let dt; //delta time
 let lastTimestamp; //the timestamp of the last frame
-let running = false; //are the physics active?
-let points = []; //all of the points
-let lines = []; //all of the lines
-let tool = "dot"; //the tool they are using
+let running; //are the physics active?
+let points, lines; //all of the points and lines
+let tool; //the tool they are using
 let lineStartPoint, mousePos; //data to draw preview line
 
 class Vec {
@@ -50,7 +49,7 @@ class Point {
 		this.pos = pos;
 		this.prevPos = pos.clone();
 		this.locked = locked;
-		this.radius = 6;
+		this.radius = 5;
 	}
 
 	draw() {
@@ -90,7 +89,12 @@ class Line {
 }
 
 function setup() {
+	tool = "dot";
+	running = false;
+	points = [];
+	lines = [];
 	lastTimestamp = Date.now();
+	preset1();
 	requestAnimationFrame(tick);
 }
 
@@ -220,6 +224,59 @@ function removeLinesContainingPoint(p) {
 			i--;
 		}
 	}
+}
+
+function preset1() {
+	//sine wave
+	let numPoints = 26;
+	for (let t = 0; t < numPoints; t++) {
+		const x = t * 10 + 50;
+		const y = Math.sin(t / 5) * 60 + 100;
+		const pos = new Vec(x, y);
+		point = new Point(pos, false);
+		if (t > 0) {
+			prevPoint = points[points.length - 1];
+			lines.push(new Line(point, prevPoint));
+		}
+		points.push(point);
+	}
+	points[points.length - 1].locked = true;
+
+	//horizontal line 1
+	numPoints = 10;
+	for (let t = 0; t < numPoints; t++) {
+		const x = 220 - t * 15;
+		const y = 65;
+		const pos = new Vec(x, y);
+		point = new Point(pos, false);
+		if (t > 0) {
+			prevPoint = points[points.length - 1];
+			lines.push(new Line(point, prevPoint));
+		} else {
+			prevPoint = points[18];
+			lines.push(new Line(point, prevPoint));
+		}
+		points.push(point);
+	}
+	points[points.length - 1].locked = true;
+
+	//horizontal line 2
+	numPoints = 13;
+	for (let t = 0; t < numPoints; t++) {
+		const x = 162 + t * 15;
+		const y = 160;
+		const pos = new Vec(x, y);
+		point = new Point(pos, false);
+		if (t > 0) {
+			prevPoint = points[points.length - 1];
+			lines.push(new Line(point, prevPoint));
+		} else {
+			prevPoint = points[10];
+			lines.push(new Line(point, prevPoint));
+		}
+		points.push(point);
+	}
+	points[points.length - 1].locked = true;
 }
 
 canvas.onclick = (e) => {
