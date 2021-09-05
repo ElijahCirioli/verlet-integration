@@ -7,7 +7,7 @@
 #simulation-canvas {
 	background: rgb(249, 246, 234);
 	background: radial-gradient(circle, rgba(249, 246, 234, 1) 0%, rgba(219, 214, 180, 1) 100%);
-	cursor: url("cursor.png") 6 6, auto;
+	cursor: url("cursor.png") 4 4, auto;
 }
 #button-controls {
 	display: flex;

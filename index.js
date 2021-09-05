@@ -51,7 +51,7 @@ class Point {
 		this.pos = pos;
 		this.prevPos = pos.clone();
 		this.locked = locked;
-		this.radius = 5;
+		this.radius = 4;
 	}
 
 	draw() {
@@ -66,7 +66,7 @@ class Point {
 	}
 
 	intersect(v) {
-		//does a point with the same radius as this one at position v overlap with this point?
+		//does a circle with the same radius as this at position v overlap with this point?
 		const squaredDistance = Math.pow(v.x - this.pos.x, 2) + Math.pow(v.y - this.pos.y, 2);
 		const squaredDiameter = Math.pow(2 * this.radius, 2);
 		return squaredDistance <= squaredDiameter;
