@@ -1,7 +1,7 @@
 const canvas = document.getElementById("simulation-canvas");
 const context = canvas.getContext("2d");
 
-const gravitationalConstant = 0.0008;
+const gravitationalConstant = 0.0005;
 const numIterations = 500;
 
 let dt; //delta time
